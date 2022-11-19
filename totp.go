@@ -78,5 +78,4 @@ func main() {
 	default:
 		verify(os.Args[1])
 	}
-
 }
