@@ -38,13 +38,7 @@ func generateQRCode() {
 	fmt.Printf("************URI**************\n%s\n*****************************\n\n\n************QRCode**************\n%s\n*****************************", uri, qrCode)
 }
 
-func main() {
-	account = newOTP()
-	if len(os.Args) != 1 {
-		generateQRCode()
-		os.Exit(1)
-	}
-
+func run() {
 	writer := uilive.New()
 	writer.Start()
 	for {
@@ -56,4 +50,33 @@ func main() {
 		time.Sleep(500 * time.Millisecond)
 	}
 	writer.Stop()
+}
+
+func verify(code string) {
+	access, err := account.Validate(code)
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+	if access {
+		fmt.Println("login in!")
+	} else {
+		fmt.Println("access denied")
+	}
+}
+
+func main() {
+	account = newOTP()
+	if len(os.Args) != 2 {
+		fmt.Println("Usage : generate / run / <CODE_2_VERIFY>")
+		os.Exit(1)
+	}
+	switch os.Args[1] {
+	case "generate":
+		generateQRCode()
+	case "run":
+		run()
+	default:
+		verify(os.Args[1])
+	}
+
 }
