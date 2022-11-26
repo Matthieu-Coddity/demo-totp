@@ -23,13 +23,13 @@ func newOTP() *otpgo.TOTP {
 		Period:    30,
 		Delay:     2,
 		Algorithm: config.HmacSHA1,
-		Length:    0,
+		Length:    6,
 	}
 }
 
 func generateQRCode() {
 
-	keyUri := account.KeyUri("votre compte", "Etabli")
+	keyUri := account.KeyUri("debbie.harry@coddity.com", "demoT-OTP")
 	uri := keyUri.String()
 	qrCode, err := keyUri.QRCode()
 	if err != nil {
@@ -66,8 +66,8 @@ func verify(code string) {
 
 func main() {
 	account = newOTP()
-	if len(os.Args) != 2 {
-		fmt.Println("Usage : generate / run / <CODE_2_VERIFY>")
+	if len(os.Args) == 1 || len(os.Args) > 3 {
+		fmt.Println("Usage : generate / run / verify <CODE_2_VERIFY>")
 		os.Exit(1)
 	}
 	switch os.Args[1] {
@@ -75,7 +75,14 @@ func main() {
 		generateQRCode()
 	case "run":
 		run()
+	case "verify":
+		if len(os.Args) != 3 {
+			fmt.Println("need code to verify")
+			os.Exit(1)
+		}
+		verify(os.Args[2])
 	default:
-		verify(os.Args[1])
+		fmt.Println("Usage : generate / run / verify <CODE_2_VERIFY>")
+		os.Exit(1)
 	}
 }
